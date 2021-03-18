@@ -1,3 +1,4 @@
+%include "boot.inc"
 ;main boot record
 ;-----------------------------------------
 SECTION MBR vstart=0x7c00
@@ -6,8 +7,8 @@ SECTION MBR vstart=0x7c00
     mov es,ax
     mov ss,ax
     mov fs,ax
-    mov sp,0x7c00h
-    mov ax,0xb800h
+    mov sp,0x7c00
+    mov ax,0xb800
     mov gs,ax       ;display memory
 ;use 0x06 to clear screen
 ;-----------------------------------------
@@ -18,10 +19,10 @@ SECTION MBR vstart=0x7c00
 ;(CL, CH) = left-top position
 ;(DL, DH) = right-bottom position
 ;no-return
-    mov ax, 0x600h
-    mov bx, 0x700h
+    mov ax, 0x600
+    mov bx, 0x700
     mov cx, 0        ;(0, 0)
-    mov dx, 0x184fh  ;(80, 25)
+    mov dx, 0x184f  ;(80, 25)
 
     int 0x10
 
@@ -46,22 +47,22 @@ SECTION MBR vstart=0x7c00
     mov byte [gs:0x00],'1'
     mov byte [gs:0x01],0xA4     ; set display attribute
 
-    mov byte [gs:0x03],' '
-    mov byte [gs:0x04],0xA4
+    mov byte [gs:0x02],' '
+    mov byte [gs:0x03],0xA4
 
-    mov byte [gs:0x05],'M'
-    mov byte [gs:0x06],0xA4
+    mov byte [gs:0x04],'M'
+    mov byte [gs:0x05],0xA4
 
-    mov byte [gs:0x07],'B'
-    mov byte [gs:0x08],0xA4
+    mov byte [gs:0x06],'B'
+    mov byte [gs:0x07],0xA4
 
-    mov byte [gs:0x09],'R'
-    mov byte [gs:0x10],0xA4
+    mov byte [gs:0x08],'R'
+    mov byte [gs:0x09],0xA4
 ;put_sting end
 
     mov eax,LOADER_START_SECTOR ; the beginning sector address (lba mode)
     mov bx,LOADER_BASE_ADDR     ; the position that the data will be placed
-    mov cx,1                    ; quantity of sectors
+    mov cx,4                    ; quantity of sectors
     call rd_disk_m_16
 
     jmp LOADER_BASE_ADDR
