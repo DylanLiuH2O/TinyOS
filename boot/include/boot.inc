@@ -9,7 +9,9 @@ DESC_L               equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;保留�
 DESC_AVL             equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;Available位,暂不需要,置0
 DESC_LIMIT_CODE2     equ 00000000_0_0_0_0_1111_0_00_0_0000_00000000b    ;代码段界限第2部分,0xf,平坦模型下且粒度为4KB时,段界限为0xfffff,这里填的是高4位
 DESC_LIMIT_DATA2     equ 00000000_0_0_0_0_1111_0_00_0_0000_00000000b    ;数据段界限第2部分,0xf,同上
-DESC_LIMIT_VIDEO2    equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;显存段界限第2部分,不使用平坦模型
+DESC_LIMIT_VIDEO2    equ 00000000_0_0_0_0_0000_0_00_0_0000_00001011b    ;显存段界限第2部分,不使用平坦模型,这里要注意最后8位
+                                                                        ;由于不使用平坦模型且显存区起始位置为0x000b8000,在段描述符中,段基址分3部分存储
+                                                                        ;因此分开之后分别为0x00(存储于段描述符高32位的31~24) 0x0b(高32位的7~0) 0x8000(低32位的31~26)
 DESC_P               equ 00000000_0_0_0_0_0000_1_00_0_0000_00000000b    ;段存在位
 DESC_DPL_0           equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;DPL特权级0
 DESC_DPL_1           equ 00000000_0_0_0_0_0000_0_01_0_0000_00000000b    ;DPL特权级1
@@ -22,7 +24,7 @@ DESC_TYPE_CODE       equ 00000000_0_0_0_0_0000_0_00_0_1000_00000000b    ;type字
 DESC_TYPE_DATA       equ 00000000_0_0_0_0_0000_0_00_0_0010_00000000b    ;type字段,用于指定代码段,x=0,e=0,w=1,a=0,不可执行,向上扩展,可写,访问位清0
 
 ;定义代码段描述符的高4字节
-DESC_CODE_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
+DESC_CODE_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \ ;(0x00 << 24)是段描述符高32位的31~24,属于段基址位的第3部分,一共8位,左移24位使其到对应位
                            DESC_L + DESC_AVL + DESC_LIMIT_CODE2 + \
                            DESC_P + DESC_DPL_0 + DESC_S_CODE +    \
                            DESC_TYPE_CODE + 0X00
@@ -34,7 +36,7 @@ DESC_DATA_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
                            DESC_TYPE_DATA + 0X00
 
 ;定义显存段描述符的高4字节
-DESC_VIDEO_HIGH_4B     equ (0x00 << 24) + DESC_G_4K + DESC_D_32 +  \
+DESC_VIDEO_HIGH_4B     equ (0x00 << 24) + DESC_G_4K + DESC_D_32 +  \ 
                            DESC_L + DESC_AVL + DESC_LIMIT_VIDEO2 + \
                            DESC_P + DESC_DPL_0 + DESC_S_DATA +     \
                            DESC_TYPE_DATA + 0X00
