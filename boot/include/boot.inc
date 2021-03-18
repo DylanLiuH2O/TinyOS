@@ -1,3 +1,48 @@
 ;--------- loader and kernel -----------
 LOADER_BASE_ADDR equ 0x900
 LOADER_START_SECTOR equ 0x2
+
+;--------- gdt descriptor attribute ----
+DESC_G_4K            equ 00000000_1_0_0_0_0000_0_00_0_0000_00000000b    ;段描述符段界限粒度位G
+DESC_D_32            equ 00000000_0_1_0_0_0000_0_00_0_0000_00000000b    ;段描述符段D/B位,设定D为1,即使代码段的偏移地址和操作数均为64位
+DESC_L               equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;保留位,用来开启64位,这里关闭
+DESC_AVL             equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;Available位,暂不需要,置0
+DESC_LIMIT_CODE2     equ 00000000_0_0_0_0_1111_0_00_0_0000_00000000b    ;代码段界限第2部分
+DESC_LIMIT_DATA2     equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;数据段界限第2部分
+DESC_LIMIT_VIDEO2    equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;显存段界限第2部分
+DESC_P               equ 00000000_0_0_0_0_0000_1_00_0_0000_00000000b    ;段存在位
+DESC_DPL_0           equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;DPL特权级0
+DESC_DPL_1           equ 00000000_0_0_0_0_0000_0_01_0_0000_00000000b    ;DPL特权级1
+DESC_DPL_2           equ 00000000_0_0_0_0_0000_0_10_0_0000_00000000b    ;DPL特权级2
+DESC_DPL_3           equ 00000000_0_0_0_0_0000_0_11_0_0000_00000000b    ;DPL特权级3
+DESC_S_CODE          equ 00000000_0_0_0_0_0000_0_00_1_0000_00000000b    ;S字段,用于指定非系统段的代码段
+DESC_S_DATA          equ 00000000_0_0_0_0_0000_0_00_1_0000_00000000b    ;S字段,用于指定非系统段的数据段,值与DESC_S_CODE相同,它们之间用type字段区分
+DESC_S_sys           equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;S字段,用于指定系统段
+DESC_TYPE_CODE       equ 00000000_0_0_0_0_0000_0_00_0_1000_00000000b    ;type字段,用于指定代码段,x=1,c=0,r=0,a=0,可执行,非一致性,不可读,访问位清0
+DESC_TYPE_DATA       equ 00000000_0_0_0_0_0000_0_00_0_0010_00000000b    ;type字段,用于指定代码段,x=0,e=0,w=1,a=0,不可执行,向上扩展,可写,访问位清0
+
+;定义代码段描述符的高4字节
+DESC_CODE_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
+                           DESC_L + DESC_AVL + DESC_LIMIT_CODE2 + \
+                           DESC_P + DESC_DPL_0 + DESC_S_CODE +    \
+                           DESC_TYPE_CODE + 0X00
+
+;定义数据段描述符的高4字节
+DESC_DATA_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
+                           DESC_L + DESC_AVL + DESC_LIMIT_DATA2 + \
+                           DESC_P + DESC_DPL_0 + DESC_S_DATA +    \
+                           DESC_TYPE_DATA + 0X00
+
+;定义显存段描述符的高4字节
+DESC_VIDEO_HIGH_4B     equ (0x00 << 24) + DESC_G_4K + DESC_D_32 +  \
+                           DESC_L + DESC_AVL + DESC_LIMIT_VIDEO2 + \
+                           DESC_P + DESC_DPL_0 + DESC_S_DATA +     \
+                           DESC_TYPE_DATA + 0X00
+
+;--------- 选择子属性 ------------------
+RPL0    equ 0000000000000_0_00b     ;RPL特权级0
+RPL1    equ 0000000000000_0_01b     ;RPL特权级1
+RPL2    equ 0000000000000_0_10b     ;RPL特权级2
+RPL3    equ 0000000000000_0_11b     ;RPL特权级3
+TI_GDT  equ 0000000000000_0_00b     ;TI字段,指定段在GDT中 
+TI_LDT  equ 0000000000000_1_00b     ;TI字段,指定段在LDT中
