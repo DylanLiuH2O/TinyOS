@@ -58,7 +58,7 @@ loader_start:
     mov cx,17           ;length of string
     mov ax,0x1301       ;指定功能号和属性
     mov bx,0x001f       ;指定页号(0x00)和颜色(0x1f)
-    mov dx,1800
+    mov dx,0x1800
     int 0x10            ;中断
 
 
