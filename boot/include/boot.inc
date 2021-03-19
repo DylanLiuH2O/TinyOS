@@ -1,6 +1,7 @@
 ;--------- loader and kernel -----------
-LOADER_BASE_ADDR equ 0x900
+LOADER_BASE_ADDR    equ 0x900
 LOADER_START_SECTOR equ 0x2
+PAGE_DIR_TABLE_POS  equ 0x100000    ;PDE占据物理地址的0x00100000~0x00100fff,共4KB
 
 ;--------- gdt descriptor attribute ----
 DESC_G_4K            equ 00000000_1_0_0_0_0000_0_00_0_0000_00000000b    ;段描述符段界限粒度位G
@@ -50,3 +51,12 @@ RPL2    equ 0000000000000_0_10b     ;RPL特权级2
 RPL3    equ 0000000000000_0_11b     ;RPL特权级3
 TI_GDT  equ 0000000000000_0_00b     ;TI字段,指定段在GDT中 
 TI_LDT  equ 0000000000000_1_00b     ;TI字段,指定段在LDT中
+
+;--------- 页表相关属性 ----------------
+;PDE addr(31~12) AVL(11~9) G(8) 0(7)   D(6) A(5) PCD(4) PWD(3) US(2) RW(1) P(0)
+;PTE addr(31~12) AVL(11~9) G(8) PAT(7) D(6) A(5) PCD(4) PWD(3) US(2) RW(1) P(0)
+PG_P    equ 00000000000000000000_000_0_0_0_0_0_0_0_0_1b
+PG_RW_R equ 00000000000000000000_000_0_0_0_0_0_0_0_0_0b
+PG_RW_W equ 00000000000000000000_000_0_0_0_0_0_0_0_1_0b
+PG_US_S equ 00000000000000000000_000_0_0_0_0_0_0_0_0_0b
+PG_US_U equ 00000000000000000000_000_0_0_0_0_0_1_0_0_0b
