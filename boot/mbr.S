@@ -10,6 +10,8 @@ SECTION MBR vstart=0x7c00
     mov sp,0x7c00
     mov ax,0xb800
     mov gs,ax       ;display memory
+
+
 ;use 0x06 to clear screen
 ;-----------------------------------------
 ;INT 0x10   func. number:0x06    func. description:roll up screen
@@ -134,10 +136,6 @@ rd_disk_m_16:
     loop .go_on_read
 
     ret     ; 调用返回
-
-
-
-    jmp $
 
     ;message db "Hello! My MBR"
     times 510-($-$$) db 0
