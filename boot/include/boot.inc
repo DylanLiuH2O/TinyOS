@@ -23,23 +23,25 @@ DESC_S_sys           equ 00000000_0_0_0_0_0000_0_00_0_0000_00000000b    ;S字段
 DESC_TYPE_CODE       equ 00000000_0_0_0_0_0000_0_00_0_1000_00000000b    ;type字段,用于指定代码段,x=1,c=0,r=0,a=0,可执行,非一致性,不可读,访问位清0
 DESC_TYPE_DATA       equ 00000000_0_0_0_0_0000_0_00_0_0010_00000000b    ;type字段,用于指定代码段,x=0,e=0,w=1,a=0,不可执行,向上扩展,可写,访问位清0
 
+;注意:下面的定义中使用到了\用于换行书写, \后面一定不能有任何内容,否则会编译失败
 ;定义代码段描述符的高4字节
-DESC_CODE_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \ ;(0x00 << 24)是段描述符高32位的31~24,属于段基址位的第3部分,一共8位,左移24位使其到对应位
+;(0x00 << 24)是段描述符高32位的31~24,属于段基址位的第3部分,一共8位,左移24位使其到对应位
+DESC_CODE_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
                            DESC_L + DESC_AVL + DESC_LIMIT_CODE2 + \
                            DESC_P + DESC_DPL_0 + DESC_S_CODE +    \
-                           DESC_TYPE_CODE + 0X00
+                           DESC_TYPE_CODE + 0x00
 
 ;定义数据段描述符的高4字节
 DESC_DATA_HIGH_4B      equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + \
                            DESC_L + DESC_AVL + DESC_LIMIT_DATA2 + \
                            DESC_P + DESC_DPL_0 + DESC_S_DATA +    \
-                           DESC_TYPE_DATA + 0X00
+                           DESC_TYPE_DATA + 0x00
 
 ;定义显存段描述符的高4字节
-DESC_VIDEO_HIGH_4B     equ (0x00 << 24) + DESC_G_4K + DESC_D_32 +  \ 
+DESC_VIDEO_HIGH_4B     equ (0x00 << 24) + DESC_G_4K + DESC_D_32 +  \
                            DESC_L + DESC_AVL + DESC_LIMIT_VIDEO2 + \
                            DESC_P + DESC_DPL_0 + DESC_S_DATA +     \
-                           DESC_TYPE_DATA + 0X00
+                           DESC_TYPE_DATA + 0x00
 
 ;--------- 选择子属性 ------------------
 RPL0    equ 0000000000000_0_00b     ;RPL特权级0
