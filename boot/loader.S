@@ -2,6 +2,7 @@
 SECTION LOADER vstart=LOADER_BASE_ADDR
 LOADER_STACK_TOP equ LOADER_BASE_ADDR
 
+    jmp loader_start
 ;构建GDT及其内部描述符
 ;注意数据的顺序,x86是小端(低尾端,低字节在低地址上)存储,代码从上到下地址变大
 GDT_BASE:         dd 0x00000000         ;低32位
@@ -57,6 +58,7 @@ loader_start:
     mov cx,17           ;length of string
     mov ax,0x1301       ;指定功能号和属性
     mov bx,0x001f       ;指定页号(0x00)和颜色(0x1f)
+    mov dx,1800
     int 0x10            ;中断
 
 
