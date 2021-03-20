@@ -281,7 +281,7 @@ setup_page:
     mov [PAGE_DIR_TABLE_POS + 0xffc],eax    ;3.将目录项最后一项指向目录表本身
 
 
-    ;1.为0号页表中的所有页表项分配物理页
+    ;1.为0号页表中的页表项分配内核空间底端1M物理页
     xor esi,esi
     mov edx,PG_US_U | PG_RW_W | PG_P        ;原先写的or 
     mov ecx,256                             ;1M/4K=256       
@@ -294,10 +294,11 @@ setup_page:
 
     ;4.
     mov ebx,PAGE_DIR_TABLE_POS
-    add ebx,0xc04                           ;768号页目录项的偏移量
-    xor esi,esi
-    mov edx,0x2000                          ;1号页表的偏移量
+    mov edx,ebx
+    add edx,0x2000                          ;1号页表的偏移量
     or edx,PG_US_U | PG_RW_W | PG_P
+    add ebx,0xc04                           ;769号页目录项的偏移量
+    xor esi,esi
     mov ecx,254
   .create_kernel_pde:
     mov [ebx+esi],edx
