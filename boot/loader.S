@@ -5,9 +5,9 @@ LOADER_STACK_TOP equ LOADER_BASE_ADDR
     ;jmp loader_start    ;跳到开始  去掉跳转,改为在mrb.S中直接跳转到loader_start,
     ;跨过数据区,数据区恰好512+256字节,偏移为0x300
 
-
 ;-------------------------------------------------------------------------------
-    ;构建GDT及其内部描述符
+; 构建GDT及其内部描述符
+;-------------------------------------------------------------------------------
     ;注意数据的顺序,x86是小端(低尾端,低字节在低地址上)存储,代码从上到下地址变大
     GDT_BASE:         dd 0x00000000         ;低32位
                       dd 0x00000000         ;高32位
@@ -66,11 +66,10 @@ LOADER_STACK_TOP equ LOADER_BASE_ADDR
 
 
 
-
-
 loader_start:
-
-;-------------------- 使用三种方法检测内存容量 ---------------------------------
+;-------------------------------------------------------------------------------
+; 使用三种方法检测内存容量 
+;-------------------------------------------------------------------------------
     ;---------------- 方法1:使用中断0x15子功能0xe820h获取内存布局 ----
     xor ebx,ebx                 ;清零
     mov edx,0x534d4150          ;SMAP的ASCII码作为签名
@@ -147,7 +146,7 @@ loader_start:
 
 
 ;-------------------------------------------------------------------------------
-;INT 0x10 功能号:0x13   使用中断打印字符串
+; INT 0x10 功能号:0x13   使用中断打印字符串
 ;-------------------------------------------------------------------------------
 ;input:
 ;AH 子功能号=13H
@@ -174,7 +173,9 @@ loader_start:
 
 
 
-;-----------准备进入保护模式----------------------------------------------------
+;-------------------------------------------------------------------------------
+; 准备进入保护模式
+;-------------------------------------------------------------------------------
     ;step1 打开A20地址线
     ;step2 加载GDT
     ;step3  开启CR0的PE位
@@ -193,21 +194,25 @@ loader_start:
     mov eax,cr0
     or eax,0x0000_0001
     mov cr0,eax
-;-------------------------------------------------------------------------------
 
     jmp dword SELECTOR_CODE:p_mode_start    ;刷新流水线
 
+;-------------------------------------------------------------------------------
+
+
 
 ;-------------------------------------------------------------------------------
-    ;出错则挂起 
+; 出错则挂起 
+;-------------------------------------------------------------------------------
 .error_hlt:
     hlt
-;--------------------
+;-------------------------------------------------------------------------------
     
 
 
-;---以下已进入保护模式----------------------------------------------------------
-
+;-------------------------------------------------------------------------------
+; 以下已进入保护模式
+;-------------------------------------------------------------------------------
 [bits 32]
 p_mode_start:
     mov ax,SELECTOR_DATA
@@ -218,8 +223,19 @@ p_mode_start:
     mov ax,SELECTOR_VIDEO
     mov gs,ax
 
-    mov byte [gs:160],'p'
 
+    mov byte [gs:160],'p'   ; 屏幕上显示P,表示已经进入保护模式
+    
+
+    ;------- load kernel from hard disk -------
+    mov eax,KERNEL_START_SECTOR
+    mov ebx,KERNEL_BIN_BASE_ADDR
+    mov ecx,200
+    call rd_disk_m_32
+    ;------------------------------------------
+
+
+    ;------- 设置页表及开启分页 --------------
     call setup_page
 
     sgdt [gdt_ptr]  ;store gdt,将GDTR的内容放回到[gdt_ptr]
@@ -249,15 +265,26 @@ p_mode_start:
     mov cr0,eax
     ;分页功能已开启,以下访问的地址均为虚拟地址
 
+    ;-----------------------------------------
 
     lgdt [gdt_ptr]  ;重新加载gdt的信息到GDTR
 
     mov byte [gs:160],'v'
+
+    jmp SELECTOR_CODE:enter_kernel
+enter_kernel:
+    call kernel_init
+    mov esp,0xc009f000
+    jmp KERNEL_ENTRY_POINT
     
     jmp $
+;-------------------------------------------------------------------------------
 
 
-;------------- 创建页目录及页表 ------------------------------------------------
+
+;-------------------------------------------------------------------------------
+; 创建页目录及页表
+;-------------------------------------------------------------------------------
 setup_page:
     ;首先将页目录所占空间逐字节清零,总共4KB
     mov ecx,4096
@@ -267,8 +294,7 @@ setup_page:
     inc esi
     loop .clear_page_dir
 
-
-    ;开始创建页目录表
+    ;------------------------------------------------------------------------
     ;虚拟地址空间顶端1GB地址范围为0xc000_0000~0xffff_ffff),其底端4MB范围为
     ;0xc000_0000~0xc03f_ffff
     ;页目录表的物理地址范围为0x0010_0000~0x0010_0fff
@@ -298,8 +324,9 @@ setup_page:
     ;  内核空间,为了让所有进程都能共享访问内核空间,我们需要实现将这段空间对应
     ;  的页目录表创建好,并写入每一项映射的页表信息,以便将来内核空间发生变化时,
     ;  都能实时访问到,而不需要再次同步页目录表
+    ;------------------------------------------------------------------------
 
-
+    ;开始创建页目录表
     mov eax,PAGE_DIR_TABLE_POS
     add eax,0x1000
     mov ebx,eax
@@ -338,4 +365,135 @@ setup_page:
     loop .create_kernel_pde
     
     ret                                     ;返回
+;-------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------------------------------
+; 内存逐字节拷贝mem_cpy(dst,src,size)
+; 输入:栈中的3个参数,按从左到右的顺序push
+; 输出:无
+;-------------------------------------------------------------------------------
+mem_cpy:
+    cld                 ;clear direction flag
+    push ebp
+    mov ebp,esp
+    push ecx            ;外层循环使用了ecx,push保护现场
+    mov edi,[ebp + 8]
+    mov esi,[ebp + 12]
+    mov ecx,[ebp + 16]
+    rep movsb
+
+    pop ecx
+    pop ebp
+    ret
+;-------------------------------------------------------------------------------
+
+
+
+;-------------------------------------------------------------------------------
+; 将内核kernel.bin中的segment移动到指定的位置
+;-------------------------------------------------------------------------------
+kernel_init:
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+
+    mov ebx,KERNEL_BIN_BASE_ADDR
+    mov esi,[ebx + 28]   ;get p_phoff; program header offset
+    mov edx,[ebx + 42]   ;get e_phentsize: size of every item in program header table
+    mov ecx,[ebx + 44]   ;get e_phnum: program header num
+  .move_each_segment
+    cmp byte [ebx + esi],PT_NULL
+    je .PTNULL
+
+    ;push arg1
+    push [ebx + esi + 8]    ;push p_vaddr: virtual adrress
+
+    ;push arg2
+    mov eax,KERNEL_BIN_BASE_ADDR
+    add eax,[ebx + esi + 4] ;add p_offset
+    push eax                ;push KERNEL_BIN_BASE_ADDR + p_offset
+
+    ;push arg3
+    push [ebx + esi + 16]   ;push p_memsz: memory size
+    call mem_cpy
+    add esp,12              ;clean args
+.PTNULL:
+    add ebx,edx             ;jump to next program header
+
+
+    loop .move_each_segment
+
+;-------------------------------------------------------------------------------
+
+
+
+;-------------------------------------------------------------------------------
+;function: read n sectors to somewhere you assign (32-bit version)
+;input:
+;   eax = LBA sector number
+;   ebx  = the position that the data will be placed
+;   ecx  = the numbers of sector that have not been read yet
+;-------------------------------------------------------------------------------
+rd_disk_m_32:
+    mov esi,eax     ; push regs'
+    mov di,cx
+;step1
+    mov dx,0x1f2
+    mov al,cl
+    out dx,al
+
+    mov eax,esi
+;step2
+    ;LBA addr 7~0 --> 0x1f3
+    mov dx,0x1f3
+    out dx,al
+
+    ;LBA addr 15~8 --> 0x1f4
+    mov cl,8
+    shr eax,cl
+    mov dx,0x1f4
+    out dx,al
+
+    ;LBA addr 23~16 --> 0x1f5
+    shr eax,cl
+    mov dx,0x1f5
+    out dx,al
+
+    ;LBA addr 27~24 --> 0x1f6
+    shr eax,cl
+    and al,0x0f     ;无关位清零
+    or al,0xe0      ;1110, LBA mode
+    mov dx,0x1f6
+    out dx,al
+
+;step3  wrtie a read command(0x20) to 0x1f7 
+    mov dx,0x1f7
+    mov al,0x20
+    out dx,al
+
+;step4 check status of hard disk 
+.not_ready:
+    nop
+    in al,dx
+    and al,0x88    ;保留第4位和第8位
+    cmp al,0x08    ;判断状态
+    jnz .not_ready
+
+;step5 read from 0x1f0
+    ;设置读取参数
+    mov ax,di
+    mov dx,256
+    mul dx      ;每次只能读一个字,即2个字节,那么读一个扇区要256次,读n个扇区要n*256次
+    mov cx,ax
+    mov dx,0x1f0
+
+.go_on_read:
+    in ax,dx
+    mov [ebx],ax        ;与实模式下的区别是ebx替代了bx
+    add ebx,2           ;因为寻址范围变大了,所以应该使用32位的寄存器
+    loop .go_on_read
+
+    ret     ; 调用返回
 ;-------------------------------------------------------------------------------
