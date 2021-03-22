@@ -2,7 +2,7 @@
 LOADER_START_SECTOR     equ 0x2
 LOADER_BASE_ADDR        equ 0x900
 PAGE_DIR_TABLE_POS      equ 0x100000    ;PDE占据物理地址的0x00100000~0x00100fff,共4KB
-KERNEL_START_ADDR       equ 0x9         ;内核在9号扇区起始
+KERNEL_START_SECTOR       equ 0x9         ;内核在9号扇区起始
 KERNEL_BIN_BASE_ADDR    equ 0x70000
 KERNEL_ENTRY_POINT      equ 0xc0001500
 
