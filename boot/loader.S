@@ -409,7 +409,7 @@ kernel_init:
     mov cx,[ebx + 44]   ;get e_phnum: program header num
   .move_each_segment:
     cmp byte [ebx + esi],PT_NULL
-    jne .PTNULL
+    je .PTNULL
 
     ;push arg1
     push dword [ebx + esi + 16]   ;push p_memsz: memory size
