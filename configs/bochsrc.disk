@@ -1,0 +1,30 @@
+# Memory
+megs: 32
+
+# BIOS
+romimage: file=/home/dylan/bochs/share/bochs/BIOS-bochs-latest
+
+# VGA BIOS
+vgaromimage: file=/home/dylan/bochs/share/bochs/VGABIOS-lgpl-latest
+
+# floppy
+#floppya: 1_44=a.img, status=inserted
+
+# boot
+boot: disk
+
+# log output
+log: bochs.out
+
+# function
+mouse: enabled=0
+#keyboard: enabled=1,
+keyboard: keymap=/home/dylan/bochs/share/bochs/keymaps/x11-pc-us.map
+
+# hard-disk
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="hd60M.img", mode=flat
+
+# remote gdb debug support
+#gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0
+
