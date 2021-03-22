@@ -1,6 +1,6 @@
 %include "boot.inc"
 SECTION LOADER vstart=LOADER_BASE_ADDR
-LOADER_STACK_TOP equ LOADER_BASE_ADDR
+LOADER_STACK_TOP equ LOADER_BASE_ADDR 
 
     ;jmp loader_start    ;跳到开始  去掉跳转,改为在mrb.S中直接跳转到loader_start,
     ;跨过数据区,数据区恰好512+256字节,偏移为0x300
@@ -378,11 +378,14 @@ mem_cpy:
     push ebp
     mov ebp,esp
     push ecx            ;外层循环使用了ecx,push保护现场
+    push esi            ;外层使用了esi 
+
     mov edi,[ebp + 8]
     mov esi,[ebp + 12]
     mov ecx,[ebp + 16]
     rep movsb
 
+    pop esi
     pop ecx
     pop ebp
     ret
@@ -398,17 +401,18 @@ kernel_init:
     xor ebx,ebx
     xor ecx,ecx
     xor edx,edx
+    xor esi,esi
 
     mov ebx,KERNEL_BIN_BASE_ADDR
     mov esi,[ebx + 28]   ;get p_phoff; program header offset
-    mov edx,[ebx + 42]   ;get e_phentsize: size of every item in program header table
-    mov ecx,[ebx + 44]   ;get e_phnum: program header num
-  .move_each_segment
+    mov dx,[ebx + 42]   ;get e_phentsize: size of every item in program header table
+    mov cx,[ebx + 44]   ;get e_phnum: program header num
+  .move_each_segment:
     cmp byte [ebx + esi],PT_NULL
-    je .PTNULL
+    jne .PTNULL
 
     ;push arg1
-    push [ebx + esi + 8]    ;push p_vaddr: virtual adrress
+    push dword [ebx + esi + 16]   ;push p_memsz: memory size
 
     ;push arg2
     mov eax,KERNEL_BIN_BASE_ADDR
@@ -416,14 +420,15 @@ kernel_init:
     push eax                ;push KERNEL_BIN_BASE_ADDR + p_offset
 
     ;push arg3
-    push [ebx + esi + 16]   ;push p_memsz: memory size
+    push dword [ebx + esi + 8]    ;push p_vaddr: virtual adrress
     call mem_cpy
     add esp,12              ;clean args
 .PTNULL:
-    add ebx,edx             ;jump to next program header
+    add esi,edx             ;jump to next program header
 
 
     loop .move_each_segment
+    ret
 
 ;-------------------------------------------------------------------------------
 
