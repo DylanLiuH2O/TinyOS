@@ -11,5 +11,5 @@ int main(void) {
     put_char('2');
     put_char('\b');
     put_char('3');
-    return(0);
+    while(1);
 }
