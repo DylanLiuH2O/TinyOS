@@ -7,7 +7,7 @@ section .text
 ;------------------------------------------------------------------------------
 ; 2021/3/24
 ; function: put_char(uint8_t char_ascii)
-; input: 
+; input: an ascii char
 ; output: 
 ;
 ; proced:
@@ -149,3 +149,38 @@ put_char:
     popad
 	ret
 
+;------------------------------------------------------------------------------
+; 2021/3/24
+; function: put_str(uint8_t* str)
+; input: a string
+; output: 
+;
+; proced:
+;        1) backup regs
+;        2) get cursor coordinates
+;        3) get char from stack
+;        4) judge whether it is control char, if not then put, otherwise, go
+;           following procedure
+;        5) judge whether scrolling screen is needed, if yes then scroll it
+;        6) renew cursor coordinates
+;        7) recovery regs
+;------------------------------------------------------------------------------
+global put_str
+put_str:
+    push ebx
+    push ecx
+    xor ecx,ecx
+    mov ebx,[esp + 12] ;get string pointer from stack
+  .proc:
+    mov cl,[ebx]
+    cmp cl,0x0
+    jz .over
+    push ecx
+    call put_char
+    add esp,4          ;clean ecx in stack
+    inc ebx
+    jmp .proc
+  .over:
+    pop ecx
+    pop ebx
+    ret
