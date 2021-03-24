@@ -81,20 +81,18 @@ put_char:
 
 
   .is_line_feed:
-    add bx,80           ;next line
-    cmp bx,2000
-
-    jge .scroll_screen
-    jmp .set_cursor
-
-
   .is_carriage_return:
+
     xor dx,dx
     mov ax,bx
     mov si,80
     div si
     sub bx,dx
 
+    add bx,80           ;next line
+    cmp bx,2000
+
+    jge .scroll_screen
     jmp .set_cursor
 
 
