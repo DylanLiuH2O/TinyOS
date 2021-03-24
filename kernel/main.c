@@ -1,5 +1,6 @@
 #include "../lib/kernel/print.h"
 int main(void) {
+    /*
     put_char('k');
     put_char('e');
     put_char('r');
@@ -11,5 +12,7 @@ int main(void) {
     put_char('2');
     put_char('\b');
     put_char('3');
+    */
+    put_str("kernel\n12\b3");
     while(1);
 }
