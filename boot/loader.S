@@ -277,9 +277,7 @@ enter_kernel:
     mov esp,0xc009f000
     mov byte [gs:160],'k'
 
-    push .back
     jmp KERNEL_ENTRY_POINT
-  .back:
     
     jmp $
 ;-------------------------------------------------------------------------------
