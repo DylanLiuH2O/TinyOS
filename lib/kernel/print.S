@@ -3,6 +3,9 @@ RPL0            equ 0000000000000_0_00b             ;RPL特权级0
 SELECTOR_VIDEO  equ (0x0003 << 3) + TI_GDT + RPL0
 
 [bits 32]
+section .data
+put_int_buf dq 0
+
 section .text
 ;------------------------------------------------------------------------------
 ; 2021/3/24
@@ -183,4 +186,92 @@ put_str:
   .over:
     pop ecx
     pop ebx
+    ret
+
+;------------------------------------------------------------------------------
+; 2021/3/25
+; function: put_int(uint32_t num)
+; input: a 32-bits number
+; output: output number in base-16 format, no '0x' prefix
+; format: if num is full-zero, then output '0', otherwise, output the numebr
+;         begin with the first none-zero char
+;         e.g 0x00000000 -> 0, 0x000abcde -> abcde
+;
+; proced:
+;        1) backup regs
+;        2) get number from stack
+;        3) get char from stack
+;        4) transfer the number to ascii string in big-endian order
+;        5) find the first none-zero char
+;        6) output string in particular format
+;------------------------------------------------------------------------------
+global put_int
+put_int:
+    pushad          ; push all 32-bits general regs
+                    ; seq: eax, ecx, edx, ebx, esp(origin), 
+                    ;      ebp, esi, and edi
+    mov ebp,esp
+    mov eax,[ebp + 36]
+    mov edx,eax
+    mov edi,7
+    mov ecx,8
+   ;trans: transfer num to ascii string 
+   ;and put them in put_int_buf in 
+   ;big-endian
+  .trans:
+    and edx,0x0000000f
+    
+    cmp edx,9
+    jg .AtoF
+
+    .onetonine:
+      add edx,'0'
+      jmp .store
+
+    .AtoF:
+      sub edx,10
+      add edx,'A'
+
+    .store:
+      mov byte [put_int_buf + edi],dl
+      dec edi
+
+      shr eax,4
+      mov edx,eax
+    loop .trans
+
+
+   ;find the first none-zeor char,
+   ;and let esi point to it
+   mov esi,0
+   mov ecx,8
+   .find_first_not_zero:
+     cmp byte [put_int_buf + esi],'0'
+     jnz .done
+     inc esi
+     loop .find_first_not_zero
+
+   .done:
+     cmp esi,8
+     jz .full_zero
+
+   mov ecx,8
+   sub ecx,esi
+   mov edi,esi
+   jmp .output
+
+   .full_zero:
+     mov ecx,1
+     mov edi,0
+
+  .output:
+    xor edx,edx
+    mov dl,[put_int_buf + edi]
+    push edx
+    call put_char
+    add esp,4
+    inc edi
+    loop .output
+    
+    popad
     ret
