@@ -14,5 +14,9 @@ int main(void) {
     put_char('3');
     */
     put_str("kernel\n12\b3");
+    put_char('\n');
+    put_int(0x00000000);
+    put_char('\n');
+    put_int(0x0000abcd);
     while(1);
 }
