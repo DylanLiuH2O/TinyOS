@@ -12,6 +12,7 @@ SECTION MBR vstart=0x7c00
     mov gs,ax       ;display memory
 
 
+
 ;-------------------------------------------------------------------------------
 ;use 0x06 to clear screen
 ;INT 0x10   func. number:0x06    func. description:roll up screen
