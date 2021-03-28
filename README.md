@@ -41,4 +41,25 @@ Make a tiny OS.
 | hd      | 磁盘映像                          |
 | configs | bochs配置文件                      |
 
+### Notes
 
+#### 内联汇编
+
+##### 基本内联汇编
+
+格式为`asm [volatile] ("assembly code")`，带`[]`的是可选项。
+
+`volatile`告诉编译器不要优化此处的代码。
+
+`asm`与`__asm__`、`volatile`与`__volatile__`均是等效的。
+
+`assembly code`的语法格式：
+
+1. 指令必须被包含在双引号中，可以使用多个双引号对分开不同指令。
+2. 指令之间需要使用分号，包括被不同对引号分开的指令。
+3. 一对双引号不能跨行，如果要跨行必须在末尾使用`\`进行转义。
+
+```assembly
+asm("movl $9, %eax;""pushl %eax") ;√
+asm("movl $9, %eax""pushl %eax") ;×
+```
