@@ -1,6 +1,6 @@
 #ifndef __LIB_IO_H
 #define __LIB_IO_H
-#include "../lib/stdint.h"
+#include "stdint.h"
 
 static inline void outb(uint16_t port, uint8_t data) {
     asm volatile("outb %b0, %w1" : : "a" (data), "Nd" (port));
