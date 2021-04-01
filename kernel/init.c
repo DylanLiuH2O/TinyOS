@@ -1,8 +1,10 @@
 #include "init.h"
-#include "../lib/kernel/print.h"
+#include "print.h"
 #include "interrupt.h"
+#include "timer.h"
 
 void init_all(void) {
     put_str("init_all\n");
     idt_init();
+    timer_init();
 }

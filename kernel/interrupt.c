@@ -20,12 +20,35 @@ struct gate_desc {
     uint16_t func_offset_high_word; //中断处理程序偏移量的低16位
 };
 
-extern intr_handler intr_entry_table[IDT_DESC_CNT]; //中断处理程序入口点数组
-static struct gate_desc idt[IDT_DESC_CNT];          //中断描述符表,后面用lidt指令载入
+extern intr_handler     intr_entry_table[IDT_DESC_CNT]; //中断处理程序入口点数组(在kernel.S中)
+char*                   intr_name[IDT_DESC_CNT];        //中断对应的异常名
+intr_handler            idt_table[IDT_DESC_CNT];        //C编写的更进一步的中断处理程序
+static struct gate_desc idt[IDT_DESC_CNT];    //中断描述符表,后面用lidt指令载入
+
 
 static void set_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler func_addr);
 static void idt_desc_init(void);
+static void pic_init(void);
+static void general_intr_handler(uint8_t vec_nr);
+static void exception_init(void);
 
+void idt_init(void);
+
+/*
+ 31                        16 15 14 13   12   11     8  7   6   5  4         0
+ ------------------------------------------------------------------------------
+ |  intr_func_offset(31~16)  | P | DPL | S(0) | TYPE() | 0 | 0 | 0 | NOT USED |   High 32-bits
+ ------------------------------------------------------------------------------
+ |   func_offset_high_word   |        attribute        |        dcount        |
+
+ 31                        16 15                                             0
+ ------------------------------------------------------------------------------
+ |        func_selector      |             intr_func_offset(15~0)             |   Low 32-bits
+ ------------------------------------------------------------------------------
+ |         selector          |               func_offset_low_word             |
+
+                            Interrupt Gate Descriptor
+*/
 //设置中断描述符
 static void set_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler func_addr) {
     p_gdesc->func_offset_low_word = (uint32_t)func_addr & 0x0000FFFF;
@@ -40,7 +63,7 @@ static void idt_desc_init(void) {
     for (int i = 0; i < IDT_DESC_CNT; i++) {
         set_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);    
     }
-    put_str("    idt_desc_init done\n");
+    put_str("[idt_desc]: init done\n");
 }
 
 //初始化可编程中断逻辑器件8259A
@@ -62,16 +85,60 @@ static void pic_init(void) {
     /*open IR0*/
     outb(PIC_M_DATA, 0xfe);
     outb(PIC_S_DATA, 0xff);
+
+    put_str("[pic]: init done\n");
+}
+
+
+//通用中断处理函数
+static void general_intr_handler(uint8_t vec_nr) {
+    if (vec_nr == 0x27 || vec_nr == 0x2f) {
+        return; 
+    }
+    put_str("int vector: 0x");
+    put_int(vec_nr);
+    put_char('\n');
+    put_str(intr_name[vec_nr]);
+    put_char('\n');
+}
+
+static void exception_init(void) {
+    for (int i = 0; i < IDT_DESC_CNT; i++) {
+        idt_table[i] = general_intr_handler;
+        intr_name[i] = "unknown";
+    }
+    intr_name[0] = "#DE Divide Error";
+    intr_name[1] = "#DB Debug";
+    intr_name[2] = "NMI Interrupt";
+    intr_name[3] = "#BP Breakpoint Exception";
+    intr_name[4] = "#OF Overflow Exception";
+    intr_name[5] = "#BR BOUND Range Exceeded Exception";
+    intr_name[6] = "#UD Invalid Opcode Exception";
+    intr_name[7] = "#NM Device Not Available Exception";
+    intr_name[8] = "#DF Double Fault Exception";
+    intr_name[9] = "Coprocessor Segment Overrun";
+    intr_name[10] = "#TS Invalid TSS Exception";
+    intr_name[11] = "#NP Segment Not Present";
+    intr_name[12] = "#SS Stack Fault Exception";
+    intr_name[13] = "#GP Genernal Protection Exception";
+    intr_name[14] = "#PF Page-Fault Exception";
+    //intr_name[15] = ""; reserve
+    intr_name[16] = "#MF x87 FPU Floating-Point Error";
+    intr_name[17] = "#AC Alignment Check Exception";
+    intr_name[18] = "#MC Machine-Check Exception";
+    intr_name[19] = "#XF SIMD Floating-Point Exception";
+
 }
 
 //初始化中断描述符表
 void idt_init(void) {
-    put_str("idt_init start\n");
+    put_str("[idt]: init start\n");
     idt_desc_init();
+    exception_init();
     pic_init();
 
     //将idt的地址转换为64位,并用内联汇编载入idt
     uint64_t idt_operand = ((sizeof(idt) - 1) | ( (uint64_t)( (uint32_t)idt << 16 ) ));
     asm volatile ("lidt %0" : : "m"(idt_operand) );
-    put_str("idt_init done\n");
+    put_str("[idt]: init done\n");
 }
