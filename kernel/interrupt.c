@@ -11,6 +11,9 @@
 #define PIC_S_CTRL 0xa0
 #define PIC_S_DATA 0xa1
 
+#define EFLAGS_IF 0x00000200
+#define GET_EFLAGS(EFLAG_VAR) asm volatile("pushfl; popl %0" : "=g" (EFLAG_VAR))
+
 //门描述符,结构体中地址向下增大
 struct gate_desc {
     uint16_t func_offset_low_word;  //中断处理程序偏移量的低16位
@@ -141,4 +144,33 @@ void idt_init(void) {
     uint64_t idt_operand = ((sizeof(idt) - 1) | ( (uint64_t)( (uint32_t)idt << 16 ) ));
     asm volatile ("lidt %0" : : "m"(idt_operand) );
     put_str("[idt]: init done\n");
+}
+
+enum intr_status get_intr_status(void) {
+    uint32_t eflags = 0;
+    GET_EFLAGS(eflags);
+
+    return (eflags & INTR_ON) != 0 ? INTR_ON : INTR_OFF;
+}
+
+enum intr_status set_intr_status(enum intr_status status) {
+    return (status & INTR_ON) != 0 ? intr_enable() : intr_disable();
+}
+
+//开中断,返回开中断后的状态
+enum intr_status intr_enable(void) {
+    if (get_intr_status() == INTR_ON) {
+        asm volatile ("cli" : : : "memory"); //IF位置1
+    }
+
+    return get_intr_status();
+}
+
+//关中断,返回关中断后的状态
+enum intr_status intr_disable(void) {
+    if (get_intr_status() == INTR_OFF) {
+        asm volatile ("sti"); //IF位置0
+    }
+
+    return get_intr_status();
 }
