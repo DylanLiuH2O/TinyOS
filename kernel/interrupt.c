@@ -160,7 +160,7 @@ enum intr_status set_intr_status(enum intr_status status) {
 //开中断,返回开中断后的状态
 enum intr_status intr_enable(void) {
     if (get_intr_status() == INTR_ON) {
-        asm volatile ("cli" : : : "memory"); //IF位置1
+        asm volatile ("sti"); //IF位置1
     }
 
     return get_intr_status();
@@ -169,7 +169,7 @@ enum intr_status intr_enable(void) {
 //关中断,返回关中断后的状态
 enum intr_status intr_disable(void) {
     if (get_intr_status() == INTR_OFF) {
-        asm volatile ("sti"); //IF位置0
+        asm volatile ("cli" : : : "memory"); //IF位置0
     }
 
     return get_intr_status();
