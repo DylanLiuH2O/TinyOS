@@ -35,8 +35,6 @@ Make a tiny OS.
 | 2021/3/31 | 添加8253定时器的初始化模块。 |
 | 2021/4/01 | 修复增加定时器模块后出现General Protection Fault的bug，原因是kernel.S中那些会压入error_code的中断相应的中断处理程序，没有使用ERROR_CODE作为macro的第二个参数，导致这类错误会多压入0到栈中，从而发生错误。 |
 
-
-
 ### Directories
 
 | 目录    | 内容                               |
