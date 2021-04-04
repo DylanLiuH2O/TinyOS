@@ -36,6 +36,7 @@ Make a tiny OS.
 | 2021/4/01 | 修复增加定时器模块后出现General Protection Fault的bug，原因是kernel.S中那些会压入error_code的中断相应的中断处理程序，没有使用ERROR_CODE作为macro的第二个参数，导致这类错误会多压入0到栈中，从而发生错误。 |
 | 2021/4/02 | 无 |
 | 2021/4/03 | 实现了字符串操作函数memset、memcpy、memcmp、strcpy、strlen、strlen、strchr、strchr_r、strcat和str_cout，并进行了测试。初步开始写内存管理的位图bitmap。 |
+| 2021/4/04 | 完成位图bitmap的数据结构设计与相关函数实现。测试的时候遇到了bug，结果发现是按位与 '&' 和 '!=' 的优先级问题，下次还真得注意一下，能加括号就加括号。 |
 
 ### Directories
 
@@ -48,6 +49,7 @@ Make a tiny OS.
 | hd      | 磁盘映像                          |
 | configs | bochs配置文件                      |
 | build | 目标文件和可执行文件 |
+| test | 测试的相关文件归档 |
 
 ### Notes
 
