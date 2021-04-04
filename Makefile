@@ -11,14 +11,15 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 
 #OBJS=$(shell find ./build/ -name "*.o")
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
-     $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o 
+     $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
+     $(BUILD)/bitmap.o
 
 INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device
 
     
 # C
 $(BUILD)/main.o: kernel/main.c lib/kernel/print.h lib/stdint.h kernel/init.h \
-                 lib/string.h
+                 lib/string.h lib/kernel/bitmap.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/init.o: kernel/init.c kernel/init.h lib/kernel/print.h \
@@ -39,6 +40,10 @@ $(BUILD)/debug.o: kernel/debug.c kernel/debug.h lib/kernel/print.h \
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/string.o: lib/string.c lib/string.h lib/stdint.h kernel/debug.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/bitmap.o: lib/kernel/bitmap.c lib/kernel/bitmap.h lib/string.h lib/stdint.h \
+                   kernel/debug.h lib/kernel/print.h
 	$(CC) $(CFLAGS) $< -o $@
 
 # 汇编
