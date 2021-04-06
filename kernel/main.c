@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "string.h"
 #include "bitmap.h"
+#include "memory.h"
 #define DEBUG
 int main(void) {
     put_str("I am kernel\n");
@@ -33,6 +34,8 @@ int main(void) {
     put_str("  actual: ");
     put_int(index);
     put_char('\n');
+
+    mem_init(); 
 
     while(1);
 }
