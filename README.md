@@ -52,6 +52,7 @@ Make a tiny OS.
 | configs | bochs配置文件                      |
 | build | 目标文件和可执行文件 |
 | test | 测试的相关文件归档 |
+| img | 测试截图 |
 
 ### Notes
 
