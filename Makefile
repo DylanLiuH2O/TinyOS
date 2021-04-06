@@ -23,7 +23,8 @@ $(BUILD)/main.o: kernel/main.c lib/kernel/print.h lib/stdint.h kernel/init.h \
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/init.o: kernel/init.c kernel/init.h lib/kernel/print.h \
-                 lib/stdint.h kernel/interrupt.h device/timer.h
+                 lib/stdint.h kernel/interrupt.h device/timer.h \
+                 kernel/memory.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/interrupt.o: kernel/interrupt.c kernel/interrupt.h \
