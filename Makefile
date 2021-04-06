@@ -12,7 +12,7 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 #OBJS=$(shell find ./build/ -name "*.o")
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
-     $(BUILD)/bitmap.o
+     $(BUILD)/bitmap.o $(BUILD)/memory.o
 
 INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device
 
@@ -44,6 +44,10 @@ $(BUILD)/string.o: lib/string.c lib/string.h lib/stdint.h kernel/debug.h
 
 $(BUILD)/bitmap.o: lib/kernel/bitmap.c lib/kernel/bitmap.h lib/string.h lib/stdint.h \
                    kernel/debug.h lib/kernel/print.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/memory.o: kernel/memory.c kernel/memory.h lib/string.h lib/stdint.h \
+                   lib/kernel/print.h
 	$(CC) $(CFLAGS) $< -o $@
 
 # 汇编
