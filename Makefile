@@ -3,7 +3,7 @@ ENTRY=0xc0001500
 AS=nasm
 CC=gcc
 LD=ld
-HD=/home/dylan/Workspaces/repo/OS/hd
+HD=/home/dylan/Workspaces/repo/TinyOS/hd
 
 ASFLAGS=-f elf
 CFLAGS=-m32 $(INCLUDE) -c -fno-builtin -fno-stack-protector
@@ -12,14 +12,14 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 #OBJS=$(shell find ./build/ -name "*.o")
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
-     $(BUILD)/bitmap.o $(BUILD)/memory.o
+     $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o
 
-INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device
+INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
 
     
 # C
 $(BUILD)/main.o: kernel/main.c lib/kernel/print.h lib/stdint.h kernel/init.h \
-                 lib/string.h lib/kernel/bitmap.h
+                 lib/string.h lib/kernel/bitmap.h thread/thread.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/init.o: kernel/init.c kernel/init.h lib/kernel/print.h \
@@ -49,6 +49,9 @@ $(BUILD)/bitmap.o: lib/kernel/bitmap.c lib/kernel/bitmap.h lib/string.h lib/stdi
 
 $(BUILD)/memory.o: kernel/memory.c kernel/memory.h lib/string.h lib/stdint.h \
                    lib/kernel/print.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/thread.o: thread/thread.c thread/thread.h kernel/memory.h lib/string.h lib/stdint.h
 	$(CC) $(CFLAGS) $< -o $@
 
 # 汇编
