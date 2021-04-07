@@ -1,4 +1,4 @@
-# OS（开发中）
+# TinyOS
 Make a tiny OS.
 
 ### References
