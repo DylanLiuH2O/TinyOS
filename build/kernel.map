@@ -152,7 +152,7 @@ LOAD build/thread.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001500     0x1b2f
+.text           0x00000000c0001500     0x1b3f
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -166,54 +166,54 @@ LOAD build/thread.o
                 0x00000000c000157a                __x86.get_pc_thunk.bx
  .text          0x00000000c000157e       0x39 build/init.o
                 0x00000000c000157e                init_all
- .text          0x00000000c00015b7      0x474 build/interrupt.o
+ .text          0x00000000c00015b7      0x47f build/interrupt.o
                 0x00000000c000193a                idt_init
                 0x00000000c00019a2                get_intr_status
                 0x00000000c00019c6                set_intr_status
                 0x00000000c00019ee                intr_enable
-                0x00000000c0001a0d                intr_disable
+                0x00000000c0001a12                intr_disable
  .text.__x86.get_pc_thunk.ax
-                0x00000000c0001a2b        0x4 build/interrupt.o
-                0x00000000c0001a2b                __x86.get_pc_thunk.ax
- .text          0x00000000c0001a2f      0x114 build/timer.o
-                0x00000000c0001aef                timer_init
- .text          0x00000000c0001b43      0x482 build/string.o
-                0x00000000c0001b43                memset
-                0x00000000c0001ba6                memcpy
-                0x00000000c0001c15                memcmp
-                0x00000000c0001cab                strcpy
-                0x00000000c0001d16                strlen
-                0x00000000c0001d71                strcmp
-                0x00000000c0001e0a                strchr
-                0x00000000c0001e71                strchr_r
-                0x00000000c0001ec7                strcat
-                0x00000000c0001f48                str_count
- .text          0x00000000c0001fc5       0xf4 build/debug.o
-                0x00000000c0001fc5                panic_spin
- *fill*         0x00000000c00020b9        0x7 
- .text          0x00000000c00020c0      0x396 build/kernel.o
-                0x00000000c00020c0                intr_exit
- *fill*         0x00000000c0002456        0xa 
- .text          0x00000000c0002460      0x176 build/print.o
-                0x00000000c0002460                put_char
-                0x00000000c000253f                put_str
-                0x00000000c000255d                put_int
- .text          0x00000000c00025d6      0x207 build/bitmap.o
-                0x00000000c00025d6                bitmap_init
-                0x00000000c0002611                bitmap_isused
-                0x00000000c0002656                bitmap_search
-                0x00000000c0002727                bitmap_set
- .text          0x00000000c00027dd      0x6e1 build/memory.o
-                0x00000000c0002da8                malloc_page
-                0x00000000c0002e49                get_kernel_pages
-                0x00000000c0002e93                mem_init
- .text          0x00000000c0002ebe      0x16d build/thread.o
-                0x00000000c0002edf                init_thread
-                0x00000000c0002f4a                thread_create
-                0x00000000c0002fcc                thread_start
+                0x00000000c0001a36        0x4 build/interrupt.o
+                0x00000000c0001a36                __x86.get_pc_thunk.ax
+ .text          0x00000000c0001a3a      0x114 build/timer.o
+                0x00000000c0001afa                timer_init
+ .text          0x00000000c0001b4e      0x482 build/string.o
+                0x00000000c0001b4e                memset
+                0x00000000c0001bb1                memcpy
+                0x00000000c0001c20                memcmp
+                0x00000000c0001cb6                strcpy
+                0x00000000c0001d21                strlen
+                0x00000000c0001d7c                strcmp
+                0x00000000c0001e15                strchr
+                0x00000000c0001e7c                strchr_r
+                0x00000000c0001ed2                strcat
+                0x00000000c0001f53                str_count
+ .text          0x00000000c0001fd0       0xf4 build/debug.o
+                0x00000000c0001fd0                panic_spin
+ *fill*         0x00000000c00020c4        0xc 
+ .text          0x00000000c00020d0      0x396 build/kernel.o
+                0x00000000c00020d0                intr_exit
+ *fill*         0x00000000c0002466        0xa 
+ .text          0x00000000c0002470      0x176 build/print.o
+                0x00000000c0002470                put_char
+                0x00000000c000254f                put_str
+                0x00000000c000256d                put_int
+ .text          0x00000000c00025e6      0x207 build/bitmap.o
+                0x00000000c00025e6                bitmap_init
+                0x00000000c0002621                bitmap_isused
+                0x00000000c0002666                bitmap_search
+                0x00000000c0002737                bitmap_set
+ .text          0x00000000c00027ed      0x6e1 build/memory.o
+                0x00000000c0002db8                malloc_page
+                0x00000000c0002e59                get_kernel_pages
+                0x00000000c0002ea3                mem_init
+ .text          0x00000000c0002ece      0x16d build/thread.o
+                0x00000000c0002eef                init_thread
+                0x00000000c0002f5a                thread_create
+                0x00000000c0002fdc                thread_start
  .text.__x86.get_pc_thunk.dx
-                0x00000000c000302b        0x4 build/thread.o
-                0x00000000c000302b                __x86.get_pc_thunk.dx
+                0x00000000c000303b        0x4 build/thread.o
+                0x00000000c000303b                __x86.get_pc_thunk.dx
  *(.gnu.warning)
 
 .fini
@@ -222,18 +222,18 @@ LOAD build/thread.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x00000000c0003030      0x679
+.rodata         0x00000000c0003040      0x679
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000c0003030       0x1e build/main.o
- .rodata        0x00000000c000304e        0xa build/init.o
- .rodata        0x00000000c0003058      0x263 build/interrupt.o
- .rodata        0x00000000c00032bb       0x29 build/timer.o
- .rodata        0x00000000c00032e4       0xae build/string.o
- .rodata        0x00000000c0003392       0x33 build/debug.o
- *fill*         0x00000000c00033c5        0x3 
- .rodata        0x00000000c00033c8       0x5b build/bitmap.o
- *fill*         0x00000000c0003423        0x1 
- .rodata        0x00000000c0003424      0x285 build/memory.o
+ .rodata        0x00000000c0003040       0x1e build/main.o
+ .rodata        0x00000000c000305e        0xa build/init.o
+ .rodata        0x00000000c0003068      0x263 build/interrupt.o
+ .rodata        0x00000000c00032cb       0x29 build/timer.o
+ .rodata        0x00000000c00032f4       0xae build/string.o
+ .rodata        0x00000000c00033a2       0x33 build/debug.o
+ *fill*         0x00000000c00033d5        0x3 
+ .rodata        0x00000000c00033d8       0x5b build/bitmap.o
+ *fill*         0x00000000c0003433        0x1 
+ .rodata        0x00000000c0003434      0x285 build/memory.o
 
 .rodata1
  *(.rodata1)
@@ -242,24 +242,24 @@ LOAD build/thread.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c00036ac      0x634
+.eh_frame       0x00000000c00036bc      0x634
  *(.eh_frame)
- .eh_frame      0x00000000c00036ac       0x70 build/main.o
- .eh_frame      0x00000000c000371c       0x24 build/init.o
+ .eh_frame      0x00000000c00036bc       0x70 build/main.o
+ .eh_frame      0x00000000c000372c       0x24 build/init.o
                                          0x50 (松开之前的大小)
- .eh_frame      0x00000000c0003740      0x18c build/interrupt.o
+ .eh_frame      0x00000000c0003750      0x18c build/interrupt.o
                                         0x1b8 (松开之前的大小)
- .eh_frame      0x00000000c00038cc       0x70 build/timer.o
+ .eh_frame      0x00000000c00038dc       0x70 build/timer.o
                                          0xb0 (松开之前的大小)
- .eh_frame      0x00000000c000393c      0x168 build/string.o
+ .eh_frame      0x00000000c000394c      0x168 build/string.o
                                         0x194 (松开之前的大小)
- .eh_frame      0x00000000c0003aa4       0x1c build/debug.o
+ .eh_frame      0x00000000c0003ab4       0x1c build/debug.o
                                          0x48 (松开之前的大小)
- .eh_frame      0x00000000c0003ac0       0x8c build/bitmap.o
+ .eh_frame      0x00000000c0003ad0       0x8c build/bitmap.o
                                          0xb8 (松开之前的大小)
- .eh_frame      0x00000000c0003b4c       0xf8 build/memory.o
+ .eh_frame      0x00000000c0003b5c       0xf8 build/memory.o
                                         0x138 (松开之前的大小)
- .eh_frame      0x00000000c0003c44       0x9c build/thread.o
+ .eh_frame      0x00000000c0003c54       0x9c build/thread.o
                                          0xdc (松开之前的大小)
  *(.eh_frame.*)
 
