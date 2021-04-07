@@ -54,6 +54,9 @@ $(BUILD)/memory.o: kernel/memory.c kernel/memory.h lib/string.h lib/stdint.h \
 $(BUILD)/thread.o: thread/thread.c thread/thread.h kernel/memory.h lib/string.h lib/stdint.h
 	$(CC) $(CFLAGS) $< -o $@
 
+$(BUILD)/list.o: lib/kernel/list.c lib/kernel/list.h kernel/interrupt.h lib/stdint.h
+	$(CC) $(CFLAGS) $< -o $@
+
 # 汇编
 $(BUILD)/kernel.o: kernel/kernel.S
 	$(AS) $(ASFLAGS) $< -o $@
