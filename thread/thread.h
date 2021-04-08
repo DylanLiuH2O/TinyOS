@@ -1,6 +1,7 @@
 #ifndef __THREAD_H
 #define __THREAD_H
 #include "stdint.h"
+#include "list.h"
 
 
 //自定义通用函数类型
@@ -58,9 +59,24 @@ struct thread_stack {
 struct task_struct {
     uint32_t* self_kstack;          //线程内核栈
     enum      task_status status;
+    char      name[16];             //
     uint32_t  priority;             //优先级
-    char      name[16];
-    uint32_t  stack_magic;
+
+    uint8_t  ticks;
+    uint32_t elapsed_ticks;         //任务执行的时钟数
+
+    struct list_node general_tag;
+
+    struct list_node all_list_tag;
+
+
+    uint32_t* pgdir;            //进程自己页表的虚拟地址
+    uint32_t  stack_magic;      //用于检测栈是否已满
 };
+
+struct task_struct* running_thread(void);
+struct task_struct* thread_start(char* name, int pri, thread_func function, void* func_arg);
+void schedule(void);
+void init_thread_env(void);
 
 #endif
