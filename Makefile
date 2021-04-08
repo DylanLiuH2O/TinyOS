@@ -12,19 +12,21 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 #OBJS=$(shell find ./build/ -name "*.o")
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
-     $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o
+     $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o $(BUILD)/list.o \
+     $(BUILD)/switch.o
 
 INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
 
     
 # C
 $(BUILD)/main.o: kernel/main.c lib/kernel/print.h lib/stdint.h kernel/init.h \
-                 lib/string.h lib/kernel/bitmap.h thread/thread.h
+                 lib/string.h lib/kernel/bitmap.h thread/thread.h lib/kernel/list.h \
+                 thread/switch.h kernel/interrupt.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/init.o: kernel/init.c kernel/init.h lib/kernel/print.h \
                  lib/stdint.h kernel/interrupt.h device/timer.h \
-                 kernel/memory.h
+                 kernel/memory.h thread/thread.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/interrupt.o: kernel/interrupt.c kernel/interrupt.h \
@@ -33,7 +35,8 @@ $(BUILD)/interrupt.o: kernel/interrupt.c kernel/interrupt.h \
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/timer.o: device/timer.c device/timer.h lib/stdint.h \
-                  lib/kernel/io.h lib/kernel/print.h
+                  lib/kernel/io.h lib/kernel/print.h kernel/interrupt.h \
+                  kernel/debug.h thread/thread.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/debug.o: kernel/debug.c kernel/debug.h lib/kernel/print.h \
@@ -51,16 +54,20 @@ $(BUILD)/memory.o: kernel/memory.c kernel/memory.h lib/string.h lib/stdint.h \
                    lib/kernel/print.h
 	$(CC) $(CFLAGS) $< -o $@
 
-$(BUILD)/thread.o: thread/thread.c thread/thread.h kernel/memory.h lib/string.h lib/stdint.h
+$(BUILD)/thread.o: thread/thread.c thread/thread.h kernel/memory.h lib/string.h \
+                   lib/stdint.h lib/kernel/list.h thread/switch.h lib/kernel/print.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/list.o: lib/kernel/list.c lib/kernel/list.h kernel/interrupt.h lib/stdint.h
 	$(CC) $(CFLAGS) $< -o $@
 
+
 # 汇编
 $(BUILD)/kernel.o: kernel/kernel.S
 	$(AS) $(ASFLAGS) $< -o $@
 $(BUILD)/print.o: lib/kernel/print.S
+	$(AS) $(ASFLAGS) $< -o $@
+$(BUILD)/switch.o: thread/switch.S
 	$(AS) $(ASFLAGS) $< -o $@
 
 # 链接所有目标文件
