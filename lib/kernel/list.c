@@ -58,7 +58,7 @@ void list_iterate(struct list* plist)
 
 void list_append(struct list* plist, struct list_node* node)
 {
-    list_insert(&plist->tail, node);
+    list_insert_before(&plist->tail, node);
 }
 
 
@@ -84,7 +84,7 @@ uint32_t list_len(struct list* plist)
 struct list_node* list_traversal(struct list* plist, function func, uint32_t arg)
 {
     if (list_empty(plist) == 0)  {
-        return NULL
+        return NULL;
     }
 
     struct list_node* curr = plist->head.next;
