@@ -98,11 +98,32 @@ static void general_intr_handler(uint8_t vec_nr) {
     if (vec_nr == 0x27 || vec_nr == 0x2f) {
         return; 
     }
+
+    set_cursor(0);  //该函数在print.S中
+    for (int i = 0; i < 320; i++) {
+        put_char(' '); 
+    }
+    set_cursor(0);
+    put_str("!!!!!!!!    exception message begin    !!!!!!!!\n");
+    set_cursor(88);
+    put_str(intr_name[vec_nr]);
+    if (vec_nr == 14) {
+        int page_fault_vaddr = 0; 
+        asm volatile ("movl %%cr2, %0" : "=r" (page_fault_vaddr));
+        put_str("\npage fault addr is : ");
+        put_int(page_fault_vaddr);
+        put_char('\n');
+    }
+    put_str("\n!!!!!!!!    exception message end    !!!!!!!!\n");
+    while(1);
+
+    /*
     put_str("int vector: 0x");
     put_int(vec_nr);
     put_char('\n');
     put_str(intr_name[vec_nr]);
     put_char('\n');
+    */
 }
 
 static void exception_init(void) {
@@ -133,6 +154,12 @@ static void exception_init(void) {
 
 }
 
+//注册中断处理程序(本质上就是将函数地址放入中断处理程序表)
+void register_handler(uint8_t vector_no, intr_handler function)
+{
+    idt_table[vector_no] = function;
+}
+
 //初始化中断描述符表
 void idt_init(void) {
     put_str("[idt]: init start\n");
@@ -160,7 +187,7 @@ enum intr_status set_intr_status(enum intr_status status) {
 //开中断,返回开中断前的状态
 enum intr_status intr_enable(void) {
     enum intr_status old_status = get_intr_status();
-    if (old_status == INTR_ON) {
+    if (old_status == INTR_OFF) {
         asm volatile ("sti"); //IF位置1
     }
 
@@ -170,7 +197,7 @@ enum intr_status intr_enable(void) {
 //关中断,返回关中断前的状态
 enum intr_status intr_disable(void) {
     enum intr_status old_status = get_intr_status();
-    if (old_status == INTR_OFF) {
+    if (old_status == INTR_ON) {
         asm volatile ("cli" : : : "memory"); //IF位置0
     }
 
