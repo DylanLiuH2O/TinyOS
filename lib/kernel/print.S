@@ -275,3 +275,41 @@ put_int:
     
     popad
     ret
+;------------------------------------------------------------------------------
+; 2021/4/8
+; function: set_cursor(uint32_t pos)
+; input: cursor position
+; output: set cursor to position
+;
+; proced:
+;        1) backup regs
+;        2) get number from stack
+;        3) get char from stack
+;        4) transfer the number to ascii string in big-endian order
+;        5) find the first none-zero char
+;        6) output string in particular format
+;------------------------------------------------------------------------------
+global set_cursor
+set_cursor:
+    pushad
+    mov ebp,esp
+    mov ebx,[ebp+36]
+
+    ;set high 8-bits of cursor
+    mov dx,0x3d4
+    mov al,0x0e
+    out dx,al
+    mov dx,0x3d5
+    mov al,bh
+    out dx,al
+
+    ;set low 8-bits of cursor
+    mov dx,0x3d4
+    mov al,0x0f
+    out dx,al
+    mov dx,0x3d5
+    mov al,bl
+    out dx,al
+
+    popad
+    ret
