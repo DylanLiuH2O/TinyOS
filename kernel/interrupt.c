@@ -38,9 +38,7 @@ static void exception_init(void);
 void idt_init(void);
 
 /*
- 31                        16 15 14 13   12   11     8  7   6   5  4         0
- ------------------------------------------------------------------------------
- |  intr_func_offset(31~16)  | P | DPL | S(0) | TYPE() | 0 | 0 | 0 | NOT USED |   High 32-bits
+ 31                        16 15 14 13   12   11     8  7   6   5  4         0 ------------------------------------------------------------------------------ |  intr_func_offset(31~16)  | P | DPL | S(0) | TYPE() | 0 | 0 | 0 | NOT USED |   High 32-bits
  ------------------------------------------------------------------------------
  |   func_offset_high_word   |        attribute        |        dcount        |
 
@@ -177,7 +175,7 @@ enum intr_status get_intr_status(void) {
     uint32_t eflags = 0;
     GET_EFLAGS(eflags);
 
-    return (eflags & INTR_ON) != 0 ? INTR_ON : INTR_OFF;
+    return (eflags & EFLAGS_IF) != 0 ? INTR_ON : INTR_OFF;
 }
 
 enum intr_status set_intr_status(enum intr_status status) {
