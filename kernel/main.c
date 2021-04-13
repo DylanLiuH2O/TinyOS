@@ -21,7 +21,9 @@ int main(void) {
 
     intr_enable();
     while(1) {
+        intr_disable();
         put_str("Main ");
+        intr_enable();
     }
 
     while(1);
@@ -32,7 +34,9 @@ void k_thread_a(void* arg)
 {
     char* para = (char*)arg;
     while (1) {
+        intr_disable();
         put_str(para);    
+        intr_enable();
     }
 }
 
@@ -40,6 +44,8 @@ void k_thread_b(void* arg)
 {
     char* para = (char*)arg;
     while (1) {
+        intr_disable();
         put_str(para);    
+        intr_enable();
     }
 }
