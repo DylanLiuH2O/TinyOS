@@ -166,7 +166,7 @@ LOAD build/switch.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x00000000c0001500     0x22e5
+.text           0x00000000c0001500     0x2435
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -223,30 +223,32 @@ LOAD build/switch.o
                 0x00000000c0002f9c                malloc_page
                 0x00000000c000303d                get_kernel_pages
                 0x00000000c0003087                mem_init
- .text          0x00000000c00030b2      0x4b4 build/thread.o
+ .text          0x00000000c00030b2      0x60a build/thread.o
                 0x00000000c00030b2                running_thread
                 0x00000000c00030fd                init_thread
                 0x00000000c00031a0                thread_create
                 0x00000000c0003222                thread_start
                 0x00000000c000331e                schedule
                 0x00000000c0003501                init_thread_env
+                0x00000000c0003566                thread_block
+                0x00000000c00035de                thread_unblock
  .text.__x86.get_pc_thunk.dx
-                0x00000000c0003566        0x4 build/thread.o
-                0x00000000c0003566                __x86.get_pc_thunk.dx
- .text          0x00000000c000356a      0x25b build/list.o
-                0x00000000c000356a                list_init
-                0x00000000c00035a2                list_insert_before
-                0x00000000c00035f6                list_remove
-                0x00000000c000363f                list_push
-                0x00000000c0003667                list_pop
-                0x00000000c0003693                list_append
-                0x00000000c00036bb                list_empty
-                0x00000000c00036db                list_len
-                0x00000000c000371a                list_traversal
-                0x00000000c0003780                node_find
- *fill*         0x00000000c00037c5        0xb 
- .text          0x00000000c00037d0       0x15 build/switch.o
-                0x00000000c00037d0                switch_to
+                0x00000000c00036bc        0x4 build/thread.o
+                0x00000000c00036bc                __x86.get_pc_thunk.dx
+ .text          0x00000000c00036c0      0x25b build/list.o
+                0x00000000c00036c0                list_init
+                0x00000000c00036f8                list_insert_before
+                0x00000000c000374c                list_remove
+                0x00000000c0003795                list_push
+                0x00000000c00037bd                list_pop
+                0x00000000c00037e9                list_append
+                0x00000000c0003811                list_empty
+                0x00000000c0003831                list_len
+                0x00000000c0003870                list_traversal
+                0x00000000c00038d6                node_find
+ *fill*         0x00000000c000391b        0x5 
+ .text          0x00000000c0003920       0x15 build/switch.o
+                0x00000000c0003920                switch_to
  *(.gnu.warning)
 
 .fini
@@ -255,23 +257,23 @@ LOAD build/switch.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x00000000c00037e8      0x8e9
+.rodata         0x00000000c0003938      0x9fb
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000c00037e8       0x35 build/main.o
- .rodata        0x00000000c000381d        0xa build/init.o
- *fill*         0x00000000c0003827        0x1 
- .rodata        0x00000000c0003828      0x2cf build/interrupt.o
- *fill*         0x00000000c0003af7        0x1 
- .rodata        0x00000000c0003af8       0x73 build/timer.o
- *fill*         0x00000000c0003b6b        0x1 
- .rodata        0x00000000c0003b6c       0xae build/string.o
- .rodata        0x00000000c0003c1a       0x33 build/debug.o
- *fill*         0x00000000c0003c4d        0x3 
- .rodata        0x00000000c0003c50       0x5b build/bitmap.o
- *fill*         0x00000000c0003cab        0x1 
- .rodata        0x00000000c0003cac      0x285 build/memory.o
- *fill*         0x00000000c0003f31        0x3 
- .rodata        0x00000000c0003f34      0x19d build/thread.o
+ .rodata        0x00000000c0003938       0x35 build/main.o
+ .rodata        0x00000000c000396d        0xa build/init.o
+ *fill*         0x00000000c0003977        0x1 
+ .rodata        0x00000000c0003978      0x2cf build/interrupt.o
+ *fill*         0x00000000c0003c47        0x1 
+ .rodata        0x00000000c0003c48       0x73 build/timer.o
+ *fill*         0x00000000c0003cbb        0x1 
+ .rodata        0x00000000c0003cbc       0xae build/string.o
+ .rodata        0x00000000c0003d6a       0x33 build/debug.o
+ *fill*         0x00000000c0003d9d        0x3 
+ .rodata        0x00000000c0003da0       0x5b build/bitmap.o
+ *fill*         0x00000000c0003dfb        0x1 
+ .rodata        0x00000000c0003dfc      0x285 build/memory.o
+ *fill*         0x00000000c0004081        0x3 
+ .rodata        0x00000000c0004084      0x2af build/thread.o
 
 .rodata1
  *(.rodata1)
@@ -280,26 +282,26 @@ LOAD build/switch.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000c00040d4      0x86c
+.eh_frame       0x00000000c0004334      0x8b4
  *(.eh_frame)
- .eh_frame      0x00000000c00040d4       0x8c build/main.o
- .eh_frame      0x00000000c0004160       0x24 build/init.o
+ .eh_frame      0x00000000c0004334       0x8c build/main.o
+ .eh_frame      0x00000000c00043c0       0x24 build/init.o
                                          0x50 (松开之前的大小)
- .eh_frame      0x00000000c0004184      0x1ac build/interrupt.o
+ .eh_frame      0x00000000c00043e4      0x1ac build/interrupt.o
                                         0x1d8 (松开之前的大小)
- .eh_frame      0x00000000c0004330       0x94 build/timer.o
+ .eh_frame      0x00000000c0004590       0x94 build/timer.o
                                          0xd4 (松开之前的大小)
- .eh_frame      0x00000000c00043c4      0x168 build/string.o
+ .eh_frame      0x00000000c0004624      0x168 build/string.o
                                         0x194 (松开之前的大小)
- .eh_frame      0x00000000c000452c       0x1c build/debug.o
+ .eh_frame      0x00000000c000478c       0x1c build/debug.o
                                          0x48 (松开之前的大小)
- .eh_frame      0x00000000c0004548       0x8c build/bitmap.o
+ .eh_frame      0x00000000c00047a8       0x8c build/bitmap.o
                                          0xb8 (松开之前的大小)
- .eh_frame      0x00000000c00045d4       0xf8 build/memory.o
+ .eh_frame      0x00000000c0004834       0xf8 build/memory.o
                                         0x138 (松开之前的大小)
- .eh_frame      0x00000000c00046cc      0x12c build/thread.o
-                                        0x16c (松开之前的大小)
- .eh_frame      0x00000000c00047f8      0x148 build/list.o
+ .eh_frame      0x00000000c000492c      0x174 build/thread.o
+                                        0x1b4 (松开之前的大小)
+ .eh_frame      0x00000000c0004aa0      0x148 build/list.o
                                         0x188 (松开之前的大小)
  *(.eh_frame.*)
 
