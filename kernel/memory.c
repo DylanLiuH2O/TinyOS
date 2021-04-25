@@ -1,8 +1,8 @@
-#include "memory.h"
-#include "stdint.h"
-#include "print.h"
-#include "string.h"
-#include "debug.h"
+#include "kernel/memory.h"
+#include "kernel/debug.h"
+#include "lib/stdint.h"
+#include "lib/kernel/print.h"
+#include "lib/string.h"
 
 #define PG_SIZE 4096                //页大小为4K
 #define MEM_BITMAP_BASE 0xc009a000  //内存管理位图在0xc009a000~0xc009afff
@@ -21,7 +21,6 @@
 struct pool kernel_pool;             //内核内存池
 struct pool user_pool;               //用户内存池
 struct vaddr_pool kernel_vaddr_pool; //内核虚拟地址池,用于判断该虚拟地址是否被使用
-
 
 static void mem_pool_init(uint32_t total_mem) 
 {
@@ -100,8 +99,6 @@ static void mem_pool_init(uint32_t total_mem)
     put_char('\n');
     put_str("  [kernel vaddr pool]: init done\n");
 
-
-
     put_str("[memory pool]: init done\n");
 }
 
@@ -119,7 +116,6 @@ static void* vaddr_get(enum POOL_FLAGS pf, uint32_t pg_cnt)
             bitmap_set(&kernel_vaddr_pool.vpbitmap, bit_index_start + i, 1); 
         }
         vaddr = kernel_vaddr_pool.vaddr_start + bit_index_start * PG_SIZE;
-    
     } else {
         //user
     }
@@ -214,13 +210,9 @@ void* get_kernel_pages(uint32_t pg_cnt)
     return vaddr;
 }
 
-
 void mem_init(void) 
 {
     //从地址0xb00处获取实际内存容量(使用BIOS中断获取的)
     uint32_t mem_size = (*(uint32_t*)(0xb00));
     mem_pool_init(mem_size);
 }
-
-
-

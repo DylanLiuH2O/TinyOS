@@ -1,12 +1,24 @@
+#include "thread/thread.h"
+#include "thread/switch.h"
+#include "kernel/interrupt.h"
+#include "kernel/memory.h"
+#include "kernel/debug.h"
+#include "lib/stdint.h"
+#include "lib/string.h"
+#include "lib/kernel/list.h"
+#include "lib/kernel/print.h"
+
+/*
+#include "interrupt.h"
+#include "memory.h"
+#include "debug.h"
 #include "thread.h"
+#include "switch.h"
 #include "stdint.h"
 #include "string.h"
-#include "memory.h"
-#include "interrupt.h"
 #include "list.h"
-#include "debug.h"
-#include "switch.h"
 #include "print.h"
+*/
 
 
 #define NULL 0
@@ -57,7 +69,8 @@ void init_thread(struct task_struct* pthread, char* name, int pri)
 
     pthread->priority      = pri;
     pthread->ticks         = pri;
-    pthread->elapsed_ticks = 0; pthread->pgdir         = NULL;
+    pthread->elapsed_ticks = 0; 
+    pthread->pgdir         = NULL;
     pthread->stack_magic   = 0x19991005;
 }
 
@@ -139,4 +152,35 @@ void init_thread_env(void)
     make_main_thread();
 
     put_str("[thread env]: env init end\n");
+}
+
+void thread_block(enum task_status stat)
+{
+    ASSERT((stat == TASK_BLOCKED) || 
+           (stat == TASK_WAITING) || 
+           (stat == TASK_HANGING));
+
+    enum intr_status old_status = intr_disable();
+    struct task_struct* curr_thread = running_thread();
+    curr_thread->status = stat;
+    schedule();
+    //被解除阻塞后,继续执行下面语句
+    set_intr_status(old_status);
+}
+
+void thread_unblock(struct task_struct* pthread)
+{
+    enum intr_status old_status = intr_disable();
+
+    ASSERT((pthread->status == TASK_BLOCKED) || 
+           (pthread->status == TASK_WAITING) || 
+           (pthread->status == TASK_HANGING));
+    if (pthread->status != TASK_READY) {
+        ASSERT(!node_find(&thread_ready_list, &pthread->general_tag));
+        //放入队首
+        list_push(&thread_ready_list, &pthread->general_tag);
+        pthread->status = TASK_READY;
+    }
+
+    set_intr_status(old_status);
 }

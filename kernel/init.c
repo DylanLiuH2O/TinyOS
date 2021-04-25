@@ -1,9 +1,9 @@
-#include "init.h"
-#include "print.h"
-#include "interrupt.h"
-#include "timer.h"
-#include "memory.h"
-#include "thread.h"
+#include "kernel/init.h"
+#include "kernel/interrupt.h"
+#include "kernel/memory.h"
+#include "lib/kernel/print.h"
+#include "device/timer.h"
+#include "thread/thread.h"
 
 void init_all(void) {
     put_str("init_all\n");

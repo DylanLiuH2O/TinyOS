@@ -1,8 +1,8 @@
-#include "print.h"      //汇编提供的打印功能
-#include "stdint.h"     //类型封装
-#include "interrupt.h"  //中断相关
-#include "global.h"
-#include "io.h"
+#include "kernel/interrupt.h"   //中断相关
+#include "kernel/global.h"
+#include "lib/stdint.h"         //类型封装
+#include "lib/kernel/print.h"   //汇编提供的打印功能
+#include "lib/kernel/io.h"
 
 #define IDT_DESC_CNT 0x21
 
@@ -38,7 +38,9 @@ static void exception_init(void);
 void idt_init(void);
 
 /*
- 31                        16 15 14 13   12   11     8  7   6   5  4         0 ------------------------------------------------------------------------------ |  intr_func_offset(31~16)  | P | DPL | S(0) | TYPE() | 0 | 0 | 0 | NOT USED |   High 32-bits
+ 31                        16 15 14 13   12   11     8  7   6   5  4         0 
+ ------------------------------------------------------------------------------
+ |  intr_func_offset(31~16)  | P | DPL | S(0) | TYPE() | 0 | 0 | 0 | NOT USED |   High 32-bits
  ------------------------------------------------------------------------------
  |   func_offset_high_word   |        attribute        |        dcount        |
 

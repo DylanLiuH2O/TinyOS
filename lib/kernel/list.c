@@ -1,5 +1,5 @@
-#include "list.h"
-#include "interrupt.h"
+#include "kernel/interrupt.h"
+#include "lib/kernel/list.h"
 
 #define NULL 0
 
@@ -60,8 +60,6 @@ void list_append(struct list* plist, struct list_node* node)
 {
     list_insert_before(&plist->tail, node);
 }
-
-
 
 _BOOL list_empty(struct list* plist)
 {

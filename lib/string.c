@@ -1,6 +1,6 @@
-#include "string.h"
-#include "debug.h"
-#include "stdint.h"
+#include "lib/stdint.h"
+#include "lib/string.h"
+#include "kernel/debug.h"
 
 #define NULL 0
 
@@ -71,7 +71,6 @@ int8_t strcmp(const char* a, const char* b) {
         b++;
     }
     return *a < *b ? -1 : *a > *b;
-
 }
 
 char* strchr(const char* str, const uint8_t ch) {

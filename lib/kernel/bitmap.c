@@ -1,8 +1,8 @@
-#include "bitmap.h"
-#include "string.h"
-#include "stdint.h"
-#include "debug.h"
-#include "print.h"
+#include "lib/kernel/bitmap.h"
+#include "lib/kernel/print.h"
+#include "lib/string.h"
+#include "lib/stdint.h"
+#include "kernel/debug.h"
 
 void bitmap_init(struct bitmap* bm, uint32_t bytes_len) {
     bm->bytes_len = bytes_len;
@@ -68,5 +68,4 @@ void bitmap_set(struct bitmap* bm, uint32_t bit_index, int8_t value) {
     } else {
         bm->bits[byte_index] &= (~mask);
     }
-
 }

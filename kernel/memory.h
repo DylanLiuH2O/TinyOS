@@ -1,7 +1,8 @@
-#ifndef __MEMORY_H
-#define __MEMORY_H
-#include "stdint.h"
-#include "bitmap.h"
+#ifndef __KERNEL_MEMORY_H
+#define __KERNEL_MEMORY_H
+
+#include "lib/stdint.h"
+#include "lib/kernel/bitmap.h"
 
 #define PG_P_1  1   //页表存在位
 #define PG_P_0  0   //页表存在位

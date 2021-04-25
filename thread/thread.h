@@ -1,8 +1,7 @@
-#ifndef __THREAD_H
-#define __THREAD_H
-#include "stdint.h"
-#include "list.h"
-
+#ifndef __THREAD_THREAD_H
+#define __THREAD_THREAD_H
+#include "lib/stdint.h"
+#include "lib/kernel/list.h"
 
 //自定义通用函数类型
 typedef void thread_func(void*);
@@ -78,5 +77,7 @@ struct task_struct* running_thread(void);
 struct task_struct* thread_start(char* name, int pri, thread_func function, void* func_arg);
 void schedule(void);
 void init_thread_env(void);
+void thread_block(enum task_status stat);
+void thread_unblock(struct task_struct* pthread);
 
 #endif

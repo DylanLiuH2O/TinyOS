@@ -1,12 +1,13 @@
-#include "print.h"
-#include "init.h"
-#include "debug.h"
-#include "stdint.h"
-#include "string.h"
-#include "bitmap.h"
-#include "memory.h"
-#include "interrupt.h"
-#include "thread.h"
+#include "lib/stdint.h"
+#include "lib/string.h"
+#include "lib/kernel/print.h"
+#include "lib/kernel/bitmap.h"
+#include "kernel/init.h"
+#include "kernel/interrupt.h"
+#include "kernel/debug.h"
+#include "kernel/memory.h"
+#include "thread/thread.h"
+
 #define DEBUG
 
 void k_thread_a(void* arg);

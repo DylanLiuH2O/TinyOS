@@ -1,7 +1,7 @@
-#ifndef __LIST_H
-#define __LIST_H
+#ifndef __LIB_KERNEL_LIST_H
+#define __LIB_KERNEL_LIST_H
 
-#include "stdint.h"
+#include "lib/stdint.h"
 
 //通过成员的偏移量,求出结构体的起始地址
 #define offset(struct_type,memeber) (uint32_t)(&((struct_type*)0)->member)
