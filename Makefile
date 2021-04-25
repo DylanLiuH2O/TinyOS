@@ -15,7 +15,8 @@ OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o $(BUILD)/list.o \
      $(BUILD)/switch.o
 
-INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
+#INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
+INCLUDE=-I./
 
     
 # C
