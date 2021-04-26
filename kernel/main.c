@@ -7,6 +7,7 @@
 #include "kernel/debug.h"
 #include "kernel/memory.h"
 #include "thread/thread.h"
+#include "device/console.h"
 
 #define DEBUG
 
@@ -22,9 +23,7 @@ int main(void) {
 
     intr_enable();
     while(1) {
-        intr_disable();
-        put_str("Main ");
-        intr_enable();
+        console_put_str("Main ");
     }
 
     while(1);
@@ -35,9 +34,7 @@ void k_thread_a(void* arg)
 {
     char* para = (char*)arg;
     while (1) {
-        intr_disable();
-        put_str(para);    
-        intr_enable();
+        console_put_str(para);
     }
 }
 
@@ -45,8 +42,6 @@ void k_thread_b(void* arg)
 {
     char* para = (char*)arg;
     while (1) {
-        intr_disable();
-        put_str(para);    
-        intr_enable();
+        console_put_str(para);
     }
 }
