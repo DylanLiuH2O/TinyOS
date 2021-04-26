@@ -4,6 +4,7 @@
 #include "lib/kernel/print.h"
 #include "device/timer.h"
 #include "thread/thread.h"
+#include "device/console.h"
 
 void init_all(void) {
     put_str("init_all\n");
@@ -11,4 +12,5 @@ void init_all(void) {
     mem_init();
     init_thread_env();
     timer_init();
+    console_init();
 }
