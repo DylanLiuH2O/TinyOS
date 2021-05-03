@@ -13,7 +13,7 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
      $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o $(BUILD)/list.o \
-     $(BUILD)/switch.o $(BUILD)/sync.o $(BUILD)/console.o
+     $(BUILD)/switch.o $(BUILD)/sync.o $(BUILD)/console.o $(BUILD)/keyboard.o
 
 #INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
 INCLUDE=-I./
@@ -26,7 +26,8 @@ $(BUILD)/main.o: kernel/main.c lib/kernel/print.h lib/stdint.h kernel/init.h \
 
 $(BUILD)/init.o: kernel/init.c kernel/init.h lib/kernel/print.h lib/stdint.h \
                  kernel/interrupt.h device/timer.h kernel/memory.h          \
-                 thread/thread.h thread/sync.h device/console.h
+                 thread/thread.h thread/sync.h device/console.h 			\
+				 device/keyboard.h
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/interrupt.o: kernel/interrupt.c kernel/interrupt.h lib/stdint.h \
@@ -68,6 +69,10 @@ $(BUILD)/sync.o: thread/sync.c lib/kernel/list.h kernel/interrupt.h \
 
 $(BUILD)/console.o: device/console.c device/console.h lib/kernel/print.h lib/stdint.h \
                     thread/sync.h thread/thread.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/keyboard.o: device/keyboard.c device/keyboard.h lib/kernel/print.h \
+                     lib/kernel/io.h kernel/interrupt.h kernel/global.h
 	$(CC) $(CFLAGS) $< -o $@
 
 # 汇编
