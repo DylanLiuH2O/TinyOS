@@ -10,8 +10,6 @@ struct ioqueue {
     struct lock ioqueue_lock;
     struct semaphore products;
     struct semaphore freespace;
-    //struct task_struct* producer;
-    //struct task_struct* consumer;
     char buffer[BUFSIZE];
     int32_t head;
     int32_t tail;
