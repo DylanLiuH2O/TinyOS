@@ -13,7 +13,8 @@ LDFLAGS=-m elf_i386 -Ttext $(ENTRY) -e main -Map $(BUILD)/kernel.map
 OBJS=$(BUILD)/main.o $(BUILD)/init.o $(BUILD)/interrupt.o $(BUILD)/timer.o \
      $(BUILD)/string.o $(BUILD)/debug.o $(BUILD)/kernel.o $(BUILD)/print.o \
      $(BUILD)/bitmap.o $(BUILD)/memory.o $(BUILD)/thread.o $(BUILD)/list.o \
-     $(BUILD)/switch.o $(BUILD)/sync.o $(BUILD)/console.o $(BUILD)/keyboard.o
+     $(BUILD)/switch.o $(BUILD)/sync.o $(BUILD)/console.o $(BUILD)/keyboard.o \
+	 $(BUILD)/ioqueue.o
 
 #INCLUDE=-I./lib -I./lib/kernel -I./lib/user -I./kernel -I./device -I./thread
 INCLUDE=-I./
@@ -72,7 +73,12 @@ $(BUILD)/console.o: device/console.c device/console.h lib/kernel/print.h lib/std
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/keyboard.o: device/keyboard.c device/keyboard.h lib/kernel/print.h \
-                     lib/kernel/io.h kernel/interrupt.h kernel/global.h
+                     lib/kernel/io.h kernel/interrupt.h kernel/global.h     \
+					 device/ioqueue.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/ioqueue.o: device/ioqueue.c device/ioqueue.h kernel/global.h lib/stdint.h \
+                    thread/sync.h device/console.h
 	$(CC) $(CFLAGS) $< -o $@
 
 # 汇编
