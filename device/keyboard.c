@@ -3,6 +3,7 @@
 #include "lib/kernel/io.h"
 #include "kernel/interrupt.h"
 #include "kernel/global.h"
+#include "device/ioqueue.h"
 
 typedef uint8_t _BOOL;
 #define _TRUE  1
@@ -106,6 +107,8 @@ static _BOOL alt_status;
 static _BOOL caps_lock_status;
 static _BOOL ext_scancode;      //is extend code
 
+struct ioqueue kb_buf;
+
 static void intr_keyboard_handler(void)
 {
     // put_char('k');
@@ -174,7 +177,8 @@ static void intr_keyboard_handler(void)
 
         //打印非空字符
         if (curr_char > 0x0) {
-            put_char(curr_char);
+            //put_char(curr_char);
+            ioqueue_putchar(&kb_buf, curr_char);
 
         //ctrl, shift, alt, caps_lock均被映射为空字符
         } else {
@@ -197,6 +201,7 @@ static void intr_keyboard_handler(void)
 void keyboard_init(void)
 {
     put_str("[keyboard]: init start\n");
+    ioqueue_init(&kb_buf);
     register_handler(0x21, intr_keyboard_handler);
     put_str("[keyboard]: init done\n");
 }
