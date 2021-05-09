@@ -35,7 +35,7 @@ void sema_down(struct semaphore* sema)
 void sema_up(struct semaphore* sema)
 {
     enum intr_status old_status = intr_disable();
-    ASSERT(sema->value == 0);
+    //ASSERT(sema->value == 0);
     if (list_empty(&sema->wait_list) == 0) {
         struct list_node* blocked_thread_tag = list_pop(&sema->wait_list);
         struct task_struct* blocked_thread = (struct task_struct*) \
